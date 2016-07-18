@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+  <head><title>Remove Twin</title></head>
+  <body>
+    <p>The identical element in each dropdown will be removed once user selected it</p>
+    <form name="signupQuestion">
+      <select name="question1">
+        <option id="q1-1" value="one">One</option>
+        <option id="q1-2" value="two">Two</option>
+        <option id="q1-3" value="three">Three</option>
+        <option id="q1-4" value="four">Four</option>
+        <option id="q1-5" value="five">Five</option>
+      </select>
+      <select name="question2">
+        <option id="q2-1" value="one">One</option>
+        <option id="q2-2" value="two" selected>Two</option>
+        <option id="q2-3" value="three">Three</option>
+        <option id="q2-4" value="four">Four</option>
+        <option id="q2-5" value="five">Five</option>
+      </select>
+      <input type="submit" name="submit" value="Select">
+    </form>
+
+
+<script>
+(function (mQ) {
+  'use strict';
+
+/**
+ * Remove Identical
+ * @author: Huy Lam
+ * @version: 0.0.1
+ * @category: ui widget, form
+ * @desc: prevent user from selecting the same option from both dropdown menu
+ *        when user select an option from one menu, the same option will be removed from the other menu
+ * @params: [required: form name], [optional: event and callback fucntion]
+ * @howToUse: follow the above markup setting
+ * @EX: var foo = new RemoveIdentical('form_name');
+ *      foo.init();
+ */
+  mQ.RemoveIdentical = function (form_name) {
+    var events_callback = null, 
+    form_query = ['form[name=', form_name, ']'].join(''), 
+    form = document.querySelector(form_query), 
+    select_elements = form.querySelectorAll('select'), 
+    removed_question_list = { question1: [], question2: [] }, 
+
+    check = function (selected_list) {
+      var removed_list_name = (selected_list.name == 'question1') ? 'question2' : 'question1', 
+      removed_list_query = ['select[name=', removed_list_name, ']'].join(''), 
+      removed_list = form.querySelector(removed_list_query), 
+      removed_question_query = ['option[value=', selected_list.value, ']'].join(''), 
+      removed_question = removed_list.querySelector(removed_question_query), 
+      restored_question = queue(removed_question, removed_list_name);
+
+      if (restored_question != null) restore(restored_question, removed_list);
+      remove(removed_question, removed_list);
+    }, 
+
+    queue = function (removed_question, removed_list_name) {
+      var list = removed_question_list[removed_list_name];
+      list.push(removed_question.cloneNode(true));
+
+      return (list.length > 1) ? list.shift() : null;
+    }, 
+
+    restore = function (restored_question, restored_list) {
+      var index = parseInt(restored_question.id.split('-')[1]), 
+      length = restored_list.querySelectorAll('option').length, 
+      next_question_query, next_question;
+
+      if (index > length) {
+        restored_list.appendChild(restored_question);
+      } else {
+        index++;
+        next_question_query = ['#', restored_question.id.split('-')[0], '-', index].join('');
+        next_question = restored_list.querySelector(next_question_query);
+        restored_list.insertBefore(restored_question, next_question);
+      }
+    }, 
+
+    remove = function (removed_question, removed_list) {
+      removed_list.removeChild(removed_question);
+    }, 
+
+    handleEvent = function (e) {
+      if (e.type == 'change') check(e.target);
+    }, 
+
+    addEvent = function () {
+      for (var i = 0; i < select_elements.length; i++) {
+        for (var key in events_callback) {
+          select_elements[i].addEventListener(key, events_callback[key], true);
+        }
+      }
+    }, 
+
+    removeEvent = function () {
+      for (var i = 0; i < select_elements.length; i++) {
+        for (var key in events_callback) {
+          select_elements[i].removeEventListener(key, events_callback[key], true);
+        }
+      }
+    }
+
+
+    return {
+      init: function (args) { //args = {event: callback}
+        this.destroy();
+        events_callback = args || {'change': handleEvent}
+        addEvent();
+        console.log('mQ.RemoveIdentical.init ', events_callback);
+      }, 
+
+      destroy: function () {
+        if (!events_callback) return;
+        removeEvent();
+        events_callback = null;
+        console.log('mQ.RemoveIdentical.destroy ', events_callback);
+      }
+    }
+  }
+
+  var signup_question = new RemoveIdentical('signupQuestion');
+  signup_question.init();
+
+}(window, window.mQModules || (window.mQModules = {})));
+</script>
+
+
+  </body>
+</html>
+
+

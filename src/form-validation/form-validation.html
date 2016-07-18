@@ -1,0 +1,205 @@
+<!doctype html>
+<html>
+  <head><title>Form Validation</title></head>
+  <style>
+    [mQ-error-display=false] { visibility: hidden; }
+    [mQ-error-state=true] { border: 1px solid #b00; }
+    input { display: block; width: 200px; line-height: 2em; }
+    p { color: #b00; line-height: 1em; font-size: .8em; width: 200px; height: 20px; line-height: 1em; }
+    h4 { color: #b00; line-height: 1em; font-weight: normal; width: 200px; }
+  </style>
+  <body>
+    <h4 id='step1ErrorDisplay' mQ-error-display='false'>The fields below need to be filled out or corrected</h4>
+    <form name='step1' action='step2' method='post' mQ-ajax='false'>
+      <input type='text' name='title' placeholder='Title (optional)' 
+      pattern='^[A-z0-9 .-]+$' title='Title may include alphabets and these characters: . -'>
+      <p id='titleErrorDisplay' mQ-error-display='false'>Title may include alphabets and . -</p>
+
+      <input type='text' name='fullname' placeholder='Full name (required)' 
+      pattern='^[A-z0-9 _.-]+$' title='Name may include alphabets, numbers, and . - _' required>
+      <p id='fullnameErrorDisplay' mQ-error-display='false'>Name may include alphabets, numbers, and . - _</p>
+
+      <input type='text' name='company' placeholder='Company (required)' 
+      pattern='^[A-z0-9 &_.-]+$' title='Name may include alphabets, numbers, and . - _ &' required>
+      <p id='companyErrorDisplay' mQ-error-display='false'>Name may include alphabets, numbers, and . - _ &</p>
+
+      <input type='tel' name='phone' placeholder='Phone number (required)' 
+      pattern='^[0-9extEXT .()#+-]+$' title='Phone may include numbers, ext, EXT, and () # + - .' required>
+      <p id='phoneErrorDisplay' mQ-error-display='false'>Phone may include numbers, ext, EXT, and () # + - .</p>
+
+      <input type='email' name='email' placeholder='Email (required)' 
+      pattern='^[A-z]+([A-z0-9.+_-]+)*@[A-z]+([A-z0-9_-]+)*([.][A-z]+([A-z0-9_-]+)*)*([.][A-z]{2,6})$' title='Email may include alphabets, numbers, and + . - _' required>
+      <p id='emailErrorDisplay' mQ-error-display='false'>Email may include alphabets, numbers, and + . - _</p>
+
+      <input type='password' name='password' placeholder='Create password (required)' 
+      pattern="(?=.*[a-z])(?=.*[/!'^£$%&*()}{@#~?><>,.|=_+¬-])(?=.*[A-Z])(?=.*[0-9])" title='Password must include uppercase, lowercase, number, special characters' required>
+      <p id='passwordErrorDisplay' mQ-error-display='false'>Password must include uppercase, lowercase, number, special characters</p>
+
+      <input type='submit' name='step1Submit' value='Continue'>
+    </form>
+
+
+<script>
+(function (mQ) {
+  'use strict';
+
+/**
+ * Validator Module
+ * @author: Huy Lam
+ * @version: 0.5.1
+ * @category: form
+ * @desc: a ui component to handle validation and errors for form, field elements
+ *        validate form on submit
+ *        validate field on blur
+ *        display error message on focus
+ * @params: form name, events and callback functions
+ * @dependency: pattern map
+ * @ex: var form = new Validator(form_name);
+ *      form.init();
+ */
+
+  mQ.Validator = function (form_name) { 
+    var events_callback, valid, 
+    form_query = ['form[name=', form_name, ']'].join(''), 
+    form = document.querySelector(form_query), 
+    required_fields = form.querySelectorAll('[required]'), 
+    validate_fields = form.querySelectorAll('[pattern]'), 
+    error_fields = {}, 
+    timer = null, 
+
+    checkFieldOnFocus = function (input_field) {
+      hideErrorMessage(form);
+      valid = validateInputField(input_field);
+      if (valid === false) showErrorMessage(input_field);
+    }, 
+
+    checkFieldOnBlur = function (input_field) {
+      hideErrorMessage(input_field);
+      valid = validateInputField(input_field);
+      (valid === false) ? setErrorState(input_field) : clearErrorState(input_field);
+    }, 
+
+    validateInputField = function (input_field) {
+      var validate_elements = {
+        input: null, textarea: null
+      }, 
+      is_validate_element = validate_elements.hasOwnProperty(input_field.nodeName.toLowerCase());
+
+      if (!is_validate_element || !input_field.value) return;
+      return new RegExp(input_field.pattern).test(input_field.value);
+    }, 
+
+    checkFormOnSubmit = function (e) {
+      error_fields = {};
+      checkRequiredFields();
+      checkValidateFields();
+
+
+      for (var key in error_fields) { 
+        if (error_fields.hasOwnProperty(key)) { 
+          e.preventDefault();
+          showErrorMessage(form);
+          break;
+        }
+      }
+    }, 
+
+    checkRequiredFields = function () {
+      for (var i = 0; i < required_fields.length; i++) {
+        if (error_fields.hasOwnProperty(required_fields[i].name)) return;
+
+        if (!required_fields[i].value) {
+          error_fields[required_fields[i].name] = null;
+        }
+      }
+    }, 
+
+    checkValidateFields = function () {
+      for (var i = 0; i < validate_fields.length; i++) {
+        if (error_fields.hasOwnProperty(validate_fields[i].name)) return;
+
+        valid = validateInputField(validate_fields[i]);
+        if (valid === false) {
+          error_fields[validate_fields[i].name] = null;
+          setErrorState(validate_fields[i]);
+        }
+      }
+    }, 
+
+    setErrorState = function (input_field) {
+      input_field.setAttribute('mQ-error-state', true);
+    }, 
+
+    clearErrorState = function (input_field) {
+      input_field.removeAttribute('mQ-error-state');
+    }, 
+
+    showErrorMessage = function (input_field) {
+      var display_element_query = ['#', input_field.name, 'ErrorDisplay'].join(''), 
+      display_element = document.querySelector(display_element_query);
+      display_element.setAttribute('mQ-error-display', true);
+    }, 
+
+    hideErrorMessage = function (input_field) {
+      var hide_element_query = ['#', input_field.name, 'ErrorDisplay'].join(''), 
+      hide_element = document.querySelector(hide_element_query);
+      hide_element.setAttribute('mQ-error-display', false);
+    }, 
+
+    handleEvent = function (e) {
+      if (e.type == 'focus') checkFieldOnFocus(e.target);
+      if (e.type == 'blur') checkFieldOnBlur(e.target);
+      if (e.type == 'click') checkFormOnSubmit(e);
+    }, 
+
+    addEvent = function () {
+      var i, key, 
+      submit_btn = form.querySelector('[type=submit]');
+      submit_btn.addEventListener('click', handleEvent, true);
+  
+      for (i = 0; i < validate_fields.length; i++) {
+        for (key in events_callback) {
+          validate_fields[i].addEventListener(key, events_callback[key], true);
+        }
+      }
+    }, 
+
+    removeEvent = function () {
+      var i, key, 
+      submit_btn = form.querySelector('[type=submit]');
+      submit_btn.removeEventListener('click', handleEvent, true);
+
+      for (i = 0; i < validate_fields.length; i++) {
+        for (key in events_callback) {
+          validate_fields[i].removeEventListener(key, events_callback[key], true);
+        }
+      }
+    }
+
+
+    return {
+      init: function (args) {
+        this.destroy();
+        events_callback = args || {'blur': handleEvent, 'focus': handleEvent};
+        addEvent();
+        console.log('mQ.Validator.init ', events_callback);
+      }, 
+
+      destroy: function () {
+        if (!events_callback) return;
+        removeEvent();
+        events_callback = null;
+        console.log('mQ.Validator.destroy ', events_callback);
+      }
+    }
+  }
+
+  var step1 = new Validator('step1'); 
+  step1.init();
+
+}(window, window.mQModules || (window.mQModules = {})))
+</script>
+
+
+  </body>
+</html>

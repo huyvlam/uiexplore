@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <title>Download Timer</title>
+  </head>
+  <body>
+    <a href="https://github.com/huyvlam/uiexplore/blob/master/download-timer/DownloadTimer.js.zip" id="downloadable">Download</a> starts in <span id="countdown"></span>
+
+<script>
+(function (mQ) {
+  'use strict';
+
+/** Download Timer
+* @auth: Huy Lam
+* @desc: a simple timer and countdown used in auto download
+* @params: seconds
+* @ex: var foo = new DownloadTimer(5);
+*      foo.start();
+*/
+  mQ.DownloadTimer = function (seconds) {
+    var self, 
+    download_link = document.querySelector('#downloadable'), 
+    countdown_display = document.querySelector('#countdown'), 
+    number_of_second = seconds, 
+    remaining_second = null,
+    number_of_time = null, 
+    timer = null;
+
+    return {
+      start: function () {
+        self = this;
+        self.stop();
+        remaining_second = number_of_second - number_of_time;
+        countdown_display.innerHTML = remaining_second;
+
+        timer = setInterval(
+          function () {
+            if (number_of_time == number_of_second) {
+              number_of_time = null;
+              download_link.click();
+            } else {
+              number_of_time++;
+              self.start();
+            }
+          }, 
+          1000
+        );
+      }, 
+
+      stop: function () {
+        if (timer == null) return;
+        clearInterval(timer);
+        timer = null;
+      }
+    };
+  }
+
+  var download = new DownloadTimer(4);
+  download.start();
+
+}(window, window.mQModules || (window.mQModules = {})))
+</script>
+
+  </body>
+</html>

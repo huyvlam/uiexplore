@@ -1,0 +1,173 @@
+<!DOCTYPE html> 
+<html lang='en'>
+  <head>
+    <title>Single Page App - Linear Flow</title>
+    <meta charset='UTF-8'/>
+    <meta name='viewport' content='width=device-width,initial-scale=1.0,user-scalable=0,minimum-scale=1.0,maximum-scale=1.0'/>
+    <meta name='format-detection' content='telephone=no'/>
+    <meta name='apple-mobile-web-app-capable' content='yes'/>
+    <meta name='apple-mobile-web-app-status-bar-style' content='black'/>
+    <style>
+    .hideError, [mQ-view-name] { display:none; } .showError, [mQ-current-view=true] { display:block; }
+    </style>
+  </head>
+  <body mQ-app-type='single page' mQ-app-name='Fruits Catalog'>
+    <section mQ-view-name='apple'>
+      <header>APPLE</header>
+      <div>
+        <a>Back</a>
+        <a href='#cherry' mQ-navigate='next'>Next</a>
+      </div>
+    </section>
+
+    <section mQ-view-name='cherry'>
+      <header>CHERRY</header>
+      <div>
+        <a href='#apple' mQ-navigate='back'>Back</a>
+        <a href='#banana' mQ-navigate='next'>Next</a>
+      </div>
+    </section>
+
+    <section mQ-view-name='banana'>
+      <header>BANANA</header>
+      <div>
+        <a href='#cherry' mQ-navigate='back'>Back</a>
+        <a href='#mango' mQ-navigate='next'>Next</a>
+      </div>
+    </section>
+
+    <section mQ-view-name='mango'>
+      <header>MANGO</header>
+      <div>
+        <a href='#banana' mQ-navigate='back'>Back</a>
+        <a href='#nectarine' mQ-navigate='next'>Next</a>
+      </div>
+    </section>
+
+    <section mQ-view-name='nectarine'>
+      <header>NECTARINE</header>
+      <div>
+        <a href='#mango' mQ-navigate='back'>Back</a>
+        <a href='#plum' mQ-navigate='next'>Next</a>
+      </div>
+    </section>
+
+    <section mQ-view-name='plum'>
+      <header>PLUM</header>
+      <div>
+        <a href='#nectarine' mQ-navigate='back'>Back</a>
+        <a href='#peach' mQ-navigate='next'>Next</a>
+      </div>
+    </section>
+
+    <section mQ-view-name='peach'>
+      <header>PEACH</header>
+      <div>
+        <a href='#plum' mQ-navigate='back'>Back</a>
+        <a>Next</a>
+      </div>
+    </section>
+<script>
+(function (mQ) {
+  'use strict';
+
+/**
+* Single Page App (proof of concept)
+* @auth: Huy Lam
+* @desc: a linear flow designed as single page app thru manipulation of window push, pop events
+*/
+
+  mQ.SinglePageApp = function (app_name) {
+    if (!document.querySelector("body[mQ-app-type='single page']") && !app_name) return;
+
+    var events_callback, 
+    app_query = (app_name) ? ["body[mQ-app-name='", app_name, "']"].join('') : "body[mQ-app-type='single page']", 
+    app = document.querySelector(app_query), 
+    current_view = app.querySelector('[mQ-current-view=true]'), 
+    navigate_elements = (current_view) ? current_view.querySelectorAll('[mQ-navigate]') : null, 
+
+    checkCurrentView = function () {
+      if (current_view && location.hash && current_view.getAttribute('mQ-view-name') == location.hash.replace('#', '')) return;
+
+      var view_name = (location.hash) ? location.hash.replace('#', '') : app.querySelectorAll('[mQ-view-name]')[0].getAttribute('mQ-view-name');
+      clearCurrentView();
+      setCurrentView(view_name);
+      navigate_elements = current_view.querySelectorAll('[mQ-navigate]');
+    }, 
+
+    clearCurrentView = function () {
+      if (!current_view) return;
+      current_view.removeAttribute('mQ-current-view');
+    }, 
+
+    setCurrentView = function (view_name) {
+      var view_query = ['[mQ-view-name=', view_name, ']'].join(''), 
+      view = app.querySelector(view_query);
+      view.setAttribute('mQ-current-view', true);
+      current_view = view;
+    }, 
+
+    pushNextView = function (view_name) {
+      window.history.pushState(true, 'mQ', view_name);
+      clearCurrentView();
+      setCurrentView(view_name.split('#')[1]);
+    }, 
+
+    handleEvent = function (e) {
+      if (e.type == 'popstate') checkCurrentView();
+
+      if (e.type == 'click') {
+        e.preventDefault();
+        pushNextView(e.target.href);
+      }
+    }, 
+
+    addEvent = function () {
+      window.addEventListener('popstate', handleEvent, false);
+
+      var i, key;
+      for (i = 0; i < navigate_elements.length; i++) {
+        for (key in events_callback) {
+          navigate_elements[i].addEventListener(key, events_callback[key], true);
+        }
+      }
+    }, 
+
+    removeEvent = function () {
+      window.removeEventListener('popstate', handleEvent, false);
+
+      var i, key;
+      for (i = 0; i < navigate_elements.length; i++) {
+        for (key in events_callback) {
+          navigate_elements[i].removeEventListener(key, events_callback[key], true);
+        }
+      }
+    }
+
+
+    return {
+      init : function(args){
+        this.destroy();
+        events_callback = args || {'click': handleEvent};
+        checkCurrentView();
+        addEvent();
+        console.log('SinglePageApp.init ', events_callback);
+      }, 
+
+      destroy : function () {
+        if (!events_callback) return;
+        removeEvent();
+        events_callback = null;
+        console.log('SinglePageApp.destroy ', events_callback);
+      }
+    }
+  }
+
+  var fruit_catalog = new SinglePageApp();
+  fruit_catalog.init();
+
+}(window, window.mQModules || (window.mQModules = {})));
+
+</script>
+  </body>
+</html>
