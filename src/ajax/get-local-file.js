@@ -36,9 +36,17 @@
         values = line.split(',');
 
         return {
-          id: Number(values[0].replace(/\s+/g, '')),
-          running_time: Number(values[1].replace(/\s+/g, '')),
-          rating: Number(values[2].replace(/\s+/g, ''))
+          id: Number(
+            values[0].replace(/\s+/g, '')
+          ),
+
+          running_time: Number(
+            values[1].replace(/\s+/g, '')
+          ),
+
+          rating: Number(
+            values[2].replace(/\s+/g, '')
+          )
         };
       }
     );
@@ -47,7 +55,8 @@
   function sortData(data) {
     data.sort(
       function (a, b) {
-        return +(a.rating < b.rating) || +(a.rating === b.rating) - 1;
+        return +(a.rating < b.rating)
+            || +(a.rating === b.rating) - 1;
       }
     );
   }
