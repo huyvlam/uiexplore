@@ -9,6 +9,7 @@
         life = document.querySelector('.life'),
         time = document.querySelector('.time'),
         modal = document.querySelector('.modal-overlay'),
+        totalScore = document.querySelector('.total-score'),
 
         containerWidth = Math.floor(moveableContainer.offsetWidth / 10) * 10,
         containerHeight = moveableContainer.offsetHeight,
@@ -179,6 +180,13 @@
           timeout = null;
         },
 
+        displayScore = function () {
+          totalScore.innerHTML = 'Your total score is ' +
+            (
+              +(life.innerHTML) + +(score.innerHTML)
+            );
+        },
+
         // Initialize the game
         init = function () {
           resizeContainer();
@@ -201,6 +209,7 @@
 
         destroy = function () {
           resetTimeout();
+          displayScore();
           modal.style.display = 'block';
           document.removeEventListener('keydown', getKeyCode);
         };
