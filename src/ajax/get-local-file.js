@@ -61,6 +61,10 @@
     );
   }
 
+  function rotate(arr) {
+    return arr.splice(-3).concat(arr);
+  }
+
   function renderTop10(list) {
     var dataContainer = document.querySelector('#data'),
 
