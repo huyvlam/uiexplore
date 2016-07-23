@@ -89,6 +89,7 @@
           moveable.className = 'moveable ' + className || '';
         },
 
+        // Check if moveable position is same as target
         checkTarget = function (left, top, targetLeft, targetTop) {
           if (left !== targetLeft || top !== targetTop) {
             return;
