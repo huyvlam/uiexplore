@@ -17,29 +17,8 @@
         timeout = null,
         offset = 40,
 
-        isExpired = function () {
-          var remainingTime = Number(time.innerHTML);
-
-          if (remainingTime !== 0) {
-            time.innerHTML = --remainingTime;
-            return timeout = setTimeout(isExpired, 1000);
-          }
-
-          destroy();
-        },
-
-        // Listen for Left, Up, Right, Down and move the object on keydown
-        getKeyCode = function (event) {
-          if (!/37|38|39|40/.test(event.which)) {
-            return;
-          }
-
-          if (!!timeout) {
-            return move(event.keyIdentifier);
-          }
-
-          timeout = setTimeout(isExpired, 1000);
-          move(event.keyIdentifier);
+        resizeContainer = function () {
+          moveableContainer.style.width = containerWidth + 'px';
         },
 
         // Generate a random position for target
@@ -49,14 +28,9 @@
             ) * 10;
         },
 
-        resizeContainer = function () {
-          moveableContainer.style.width = containerWidth + 'px';
-        },
-
         // Place target in new position
         positionTarget = function () {
           var left = getRandomPosition((containerWidth - offset) / 10),
-
               top = getRandomPosition((containerHeight - offset) / 10);
 
           target.style.left = left + 'px';
@@ -67,6 +41,31 @@
         positionMoveable = function () {
           moveable.style.left = '50%';
           moveable.style.top = '50%';
+        },
+
+        isTimeUp = function () {
+          var remainingTime = Number(time.innerHTML);
+
+          if (remainingTime !== 0) {
+            time.innerHTML = --remainingTime;
+            return timeout = setTimeout(isTimeUp, 1000);
+          }
+
+          destroy();
+        },
+
+        // Display the total score in modal
+        displayScore = function () {
+          totalScore.innerHTML = 'Your score: ' +
+            (
+              +(life.innerHTML) + +(score.innerHTML)
+            );
+        },
+
+        // Clear timeout that was created
+        resetTimeout = function () {
+          clearTimeout(timeout);
+          timeout = null;
         },
 
         decrementLife = function () {
@@ -175,16 +174,38 @@
           }
         },
 
-        resetTimeout = function () {
-          clearTimeout(timeout);
-          timeout = null;
+        // Listen for Left, Up, Right, Down and move the object on keydown
+        getKeyCode = function (event) {
+          if (!/37|38|39|40/.test(event.which)) {
+            return;
+          }
+
+          if (!!timeout) {
+            return move(event.keyIdentifier);
+          }
+
+          timeout = setTimeout(isTimeUp, 1000);
+          move(event.keyIdentifier);
         },
 
-        displayScore = function () {
-          totalScore.innerHTML = 'Your total score is ' +
-            (
-              +(life.innerHTML) + +(score.innerHTML)
-            );
+        // Disable keydown event till user click 'Play again!'
+        destroy = function () {
+          resetTimeout();
+          displayScore();
+          document.removeEventListener('keydown', getKeyCode);
+
+          modal.style.display = 'block';
+        },
+
+        // Restore all values to original state
+        reset = function () {
+          life.innerHTML = 3;
+          score.innerHTML = 0;
+          time.innerHTML = 60;
+          modal.style.display = 'none';
+
+          positionMoveable();
+          document.addEventListener('keydown', getKeyCode);
         },
 
         // Initialize the game
@@ -192,30 +213,12 @@
           resizeContainer();
           positionTarget();
           document.addEventListener('keydown', getKeyCode);
-
-          document
-            .querySelector('.play-again')
+          document.querySelector('.play-again')
             .addEventListener('click', reset);
-        },
-
-        reset = function () {
-          life.innerHTML = 3;
-          score.innerHTML = 0;
-          time.innerHTML = 60;
-          positionMoveable();
-          modal.style.display = 'none';
-          document.addEventListener('keydown', getKeyCode);
-        },
-
-        destroy = function () {
-          resetTimeout();
-          displayScore();
-          modal.style.display = 'block';
-          document.removeEventListener('keydown', getKeyCode);
         };
 
     init();
   }
 
   document.addEventListener('DOMContentLoaded', CheeseHunt);
-})()
+})();
