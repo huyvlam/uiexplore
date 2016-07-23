@@ -17,6 +17,7 @@
         timeout = null,
         offset = 40,
 
+        // Resize outer container to multiple of 10
         resizeContainer = function () {
           moveableContainer.style.width = containerWidth + 'px';
         },
@@ -43,6 +44,7 @@
           moveable.style.top = '50%';
         },
 
+        // Check if the 60 seconds are up
         isTimeUp = function () {
           var remainingTime = Number(time.innerHTML);
 
@@ -68,6 +70,7 @@
           timeout = null;
         },
 
+        // Decrease life by 1
         decrementLife = function () {
           life.innerHTML = --life.innerHTML;
 
@@ -76,10 +79,12 @@
           }
         },
 
+        // Increase the score by 1
         incrementScore = function () {
           score.innerHTML = ++score.innerHTML;
         },
 
+        // Add css to the mouse to change its orientation
         addClass = function (className) {
           moveable.className = 'moveable ' + className || '';
         },
