@@ -89,6 +89,15 @@
           moveable.className = 'moveable ' + className || '';
         },
 
+        checkTarget = function (left, top, targetLeft, targetTop) {
+          if (left !== targetLeft || top !== targetTop) {
+            return;
+          }
+
+          incrementScore();
+          positionTarget();
+        },
+
         // Move the object LEFT
         moveLeft = function (left, top, targetLeft, targetTop) {
           if (left <= 0) {
@@ -98,10 +107,7 @@
 
           moveable.style.left = left - 10 + 'px';
 
-          if (left === targetLeft && top === targetTop) {
-            incrementScore();
-            positionTarget();
-          }
+          checkTarget(left, top, targetLeft, targetTop);
         },
 
         // Move the object UP
@@ -113,10 +119,7 @@
 
           moveable.style.top = top - 10 + 'px';
 
-          if (left === targetLeft && top === targetTop) {
-            incrementScore();
-            positionTarget();
-          }
+          checkTarget(left, top, targetLeft, targetTop);
         },
 
         // Move the object Right
@@ -128,10 +131,7 @@
 
           moveable.style.left = left + 10 + 'px';
 
-          if (left === targetLeft && top === targetTop) {
-            incrementScore();
-            positionTarget();
-          }
+          checkTarget(left, top, targetLeft, targetTop);
         },
 
         // Move the object Down
@@ -143,10 +143,7 @@
 
           moveable.style.top = top + 10 + 'px';
 
-          if (left === targetLeft && top === targetTop) {
-            incrementScore();
-            positionTarget();
-          }
+          checkTarget(left, top, targetLeft, targetTop);
         },
 
         // Move the object according to direction
