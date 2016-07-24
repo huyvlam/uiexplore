@@ -25,15 +25,5 @@ function getOddNumbers(n1, n2) {
 }
 
 function factorial(num) {
-  if (num < 0) return;
-  if (num === 0 || num === 1) return 1;
-
-  var result = num;
-
-  while (num > 1) {
-    num--;
-    result *= num;
-  }
-
-  return result;
+  return num < 2 ? 1 : num * factorial(num - 1);
 }
