@@ -1,39 +1,37 @@
-function isOddEven(n) {
-  n = Math.floor(Math.abs(n));
-  if (!Number.isInteger(n)) return;
-  var result = (n % 2 == 0) ? 'even' : 'odd';
-  return result;
-}
-
-function getOddNumbers(n1, n2) {
-  var 
-    first, last, range,
-    i = 0,
-    arr = [];
-
-  first = (isOddEven(n1) == 'odd') ? n1 : n1 + 1;
-  last = (isOddEven(n2) == 'odd') ? n2 : n2 - 1;
-  range = (last - first) / 2;
-  arr.push(first);
-
-  while (i < range) {
-    arr.push(arr[i] + 2);
-    i++;
-  }
-
-  return arr.join(' ');
-}
-
 function factorial(num) {
-  if (num < 0) return;
-  if (num === 0 || num === 1) return 1;
+  return num < 2 ? 1 : num * factorial(num - 1);
+}
 
-  var result = num;
+function isEven(num) {
+  return !(num % 2);
+}
 
-  while (num > 1) {
-    num--;
-    result *= num;
+function getEvenNumbers(from, to) {
+  var lower = isEven(from) ? from : from + 1,
+
+      upper = isEven(to) ? to : to - 1,
+
+      results = [lower];
+
+  while (lower < upper) {
+    lower = lower + 2;
+    results.push(lower);
   }
 
-  return result;
+  return results.join(' ');
+}
+
+function getOddNumbers(from, to) {
+  var lower = isEven(from) ? from + 1 : from,
+
+      upper = isEven(to) ? to - 1 : to,
+
+      results = [lower];
+
+  while (lower < upper) {
+    lower = lower + 2;
+    results.push(lower);
+  }
+
+  return results.join(' ');
 }
