@@ -7,15 +7,13 @@ function addComa(number) {
 
       numberOfComa = Math.floor(convert.length / 3),
 
-      result = remain ?
-        convert.substr(0, remain) + ',' :
-        '',
+      result = remain ? convert.substr(0, remain) + ',' : '';
 
-      i, coma, position;
+  for (let i = 0; i < numberOfComa; i++) {
+    let position = remain + i * 3,
 
-  for (i = 0; i < numberOfComa; i++) {
-    coma = (i === numberOfComa - 1) ? '' : ',';
-    position = remain + i * 3;
+        coma = (i === numberOfComa - 1) ? '' : ',';
+
     result += convert.substr(position, 3) + coma;
   }
 

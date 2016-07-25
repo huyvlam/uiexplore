@@ -1,10 +1,10 @@
 // Return the factorial of a given number
-function factorial(num) {
-  return num < 2 ? 1 : num * factorial(num - 1);
+function factorial(number) {
+  return number < 2 ? 1 : number * factorial(number - 1);
 }
 
-function isEven(num) {
-  return !(num % 2);
+function isEven(number) {
+  return !(number % 2);
 }
 
 // Return a series of even numbers between 2 given numbers: from, to
