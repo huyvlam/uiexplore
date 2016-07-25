@@ -1,5 +1,6 @@
 // Check if the braces inside a string are perfectly paired
-function findMatchingBraces(text) {
+// @ex: isBraceMatched('[{}])') -> false
+function isBraceMatched(text) {
   var braces = /\[\]|{}|\(\)/g,
 
       hasMatch = braces.test(text),
@@ -9,7 +10,7 @@ function findMatchingBraces(text) {
   if (hasMatch) {
     newText = text.replace(braces, '');
 
-    return findMatchingBraces(newText);
+    return isBraceMatched(newText);
   }
 
   return !text.length;
