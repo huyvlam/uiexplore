@@ -1,3 +1,4 @@
+// Return the factorial of a given number
 function factorial(num) {
   return num < 2 ? 1 : num * factorial(num - 1);
 }
@@ -6,6 +7,7 @@ function isEven(num) {
   return !(num % 2);
 }
 
+// Return a series of even numbers between 2 given numbers: from, to
 function getEvenNumbers(from, to) {
   var lower = isEven(from) ? from : from + 1,
 
@@ -21,6 +23,7 @@ function getEvenNumbers(from, to) {
   return results.join(' ');
 }
 
+// Return a series of odd numbers between 2 given numbers: from, to
 function getOddNumbers(from, to) {
   var lower = isEven(from) ? from + 1 : from,
 
