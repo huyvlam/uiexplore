@@ -1,8 +1,8 @@
 /**
  * stringToInteger
  * @author: Huy Lam
- * @desc: convert a given string to integer
- * @return {integer} by joining character code of each character
+ * @desc: hash a given string to integer
+ * @return {integer}
  * @use: toInteger('Aha') ->6510497
  */
 
