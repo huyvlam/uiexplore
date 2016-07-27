@@ -7,7 +7,7 @@
  */
 
 function toInt(text) {
-  var result = '';
+  var result = 0;
 
   text.replace(/\s/g, '');
 
@@ -15,5 +15,5 @@ function toInt(text) {
     result += text[i].charCodeAt();
   }
 
-  return +(result);
+  return result;
 }
